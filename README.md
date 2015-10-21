@@ -7,7 +7,9 @@ Haravan API for php
 - Use classes by this LOC 
 require_once APPPATH."/third_party/HaravanAPI/autoload.php";    
 - Get 1 product by id 
+
+```ruby
 $proHRV = new ProductHRV( 'your_haravan_store.myharavan.com', 'your_haravan_token', 'your_haravan_api_key', 'your_haravan_api_secret');  
 $product = $proHRV->call('GET', '/admin/products/1000459014.json', array()); 
-$product = $proHRV->get_one('1000459014'); 
-
+$product = $proHRV->get_one('1000459014');  
+``` 
