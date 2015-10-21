@@ -3,9 +3,11 @@ phong.nguyen 20151020 PhuNuVietNam 2015
 Haravan API for php 
 
 # usage inside CodeIgniter app: 
-- Put HaravanAPI inside folder ".../third_party/"  
+- Put HaravanAPI inside folder **".../third_party/"**  
 - Use classes by this LOC 
+```php
 require_once APPPATH."/third_party/HaravanAPI/autoload.php";    
+```
 - Get 1 product by id 
 
 ```ruby
