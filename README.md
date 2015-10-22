@@ -8,6 +8,10 @@ Haravan API for php
 ```php
 require_once APPPATH."/third_party/HaravanAPI/autoload.php";    
 ```
+- Get token  
+. Please read docs: https://docs.shopify.com/api/authentication/oauth   
+. View a demo app by Haravan:  https://github.com/Haravan/haravan_php_api   
+
 - Get 1 product by id 
 
 ```ruby
