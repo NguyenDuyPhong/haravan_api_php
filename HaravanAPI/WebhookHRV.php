@@ -25,6 +25,7 @@ class WebhookHRV extends HaravanClient {
 	public function getshopinfo(){
 		return $this->call('GET', '/admin/shop.json'); 
 	}
-}
-?>
+} 
+
+
  

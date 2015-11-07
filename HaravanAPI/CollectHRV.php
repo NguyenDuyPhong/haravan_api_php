@@ -36,6 +36,7 @@ class CollectHRV extends HaravanClient {
 	 * @param: array $arrData - Collect data under array  
 	 */  
 	public function post_one($arrData){  
+		$arrData = array( 'collect' => $arrData);  
 		return $this->call('POST', '/admin/collects.json', $arrData);  
 	}
 	
@@ -57,6 +58,7 @@ class CollectHRV extends HaravanClient {
 	 * @param: array $arrData - Collect data under array  
 	 */  
 	public function update_one($strID, $arrData){  
+		$arrData = array( 'collect' => $arrData);  
 		return $this->call('PUT', '/admin/collects/' . $strID . '.json', $arrData);  
 	} 
 	 

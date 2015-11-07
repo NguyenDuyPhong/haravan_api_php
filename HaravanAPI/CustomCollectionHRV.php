@@ -36,6 +36,7 @@ class CustomCollectionHRV extends HaravanClient {
 	 * @param: array $arrData - CustomCollection data under array  
 	 */  
 	public function post_one($arrData){  
+		$arrData = array( 'custom_collection' => $arrData);   
 		return $this->call('POST', '/admin/custom_collections.json', $arrData);  
 	}
 	
@@ -57,24 +58,49 @@ class CustomCollectionHRV extends HaravanClient {
 	 * @param: array $arrData - CustomCollection data under array  
 	 */  
 	public function update_one($strID, $arrData){  
+		$arrData = array( 'custom_collection' => $arrData);   
 		return $this->call('PUT', '/admin/custom_collections/' . $strID . '.json', $arrData);  
 	} 
 	 
 	/*
-	 * Check 1 Collection Name inside array current Custom Collection.  
+	 * Remove all CC with relevant title $strCollectionTitle  
+	 *  
+	 * @author: phong.nguyen 20151028  
+	 * @param: array $arrAllCurrentCC - MODIFIED, all current CustomCollections 
+	 * @param: string $strCollectionTitle for removing  
+	 */  
+	public function remove_all_titles(&$arrAllCurrentCC, $strCollectionTitle){  
+		$strCCTitleChecking = trim($strCollectionTitle); 
+		
+		// loop to find out removing section. 
+		foreach($arrAllCurrentCC as $arr1CC){
+			$strCCTitle = trim($arr1CC['title']); 
+			
+			if( strpos($strCCTitle, $strCCTitleChecking) !== false ){ // 2 'equal' chars ==  
+				// remove current CC 
+				$this->delete_one($arr1CC['id']);   
+				
+				// $arrAllCurrentCC 
+				
+			} 
+		} 
+	} 
+	
+	/*
+	 * Add 1 Collection "$strCollectionTitle" inside array current Custom Collection.  
 	 * Return relevant id for $strCollectionTitle. 
 	 * 
 	 * @author: phong.nguyen 20151028  
-	 * @param: array $arrCustomCollections - array 
+	 * @param: array $arrAllCurrentCC - MODIFIED, all current CustomCollections 
 	 * @param: string $strCollectionTitle 
 	 * @return: string $id 
 	 */  
-	public function check_collection($arrCurrentCC, $strCollectionTitle){   
+	public function add_one_cc(&$arrAllCurrentCC, $strCollectionTitle){   
 		
 		$strCCTitleChecking = trim($strCollectionTitle); 
 		// $boFound = false; 
 		$arrFoundCC = null; 
-		foreach($arrCurrentCC as $arr1CC){
+		foreach($arrAllCurrentCC as $arr1CC){
 			$strCCTitle = trim($arr1CC['title']); 
 			if($strCCTitle == $strCCTitleChecking){
 				$arrFoundCC = $arr1CC; 
@@ -89,13 +115,18 @@ class CustomCollectionHRV extends HaravanClient {
 		else{  
 			// create new CC   
 			$arrData = array(
-				'custom_collection' => array(  
+				// 'custom_collection' => array(   // no need! 
 					'handle' => $strCCTitleChecking, 
 					'title' => $strCCTitleChecking, 
 					// 'body_html' => '', // no need!!! 
-				)
+				// )
 			); 
 			$arrNewCC = $this->post_one($arrData); 
+			
+			//update current CustomCollection 
+			$arrAllCurrentCC[] = $arrNewCC; 
+			
+			//return New ID 
 			return $arrNewCC['id'];  
 		} 
 		

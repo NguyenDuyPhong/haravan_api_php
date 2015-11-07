@@ -18,6 +18,15 @@ class ProductHRV extends HaravanClient {
     } 
 	 
 	/*
+	 * get all products 
+	 * 
+	 * @author: phong.nguyen 20151031   
+	 */  
+	public function get_all(){  
+		return $this->call('GET', '/admin/products.json', array()); 
+	}
+	 
+	/*
 	 * get one product 
 	 * 
 	 * @author: phong.nguyen 20151021  
@@ -34,6 +43,7 @@ class ProductHRV extends HaravanClient {
 	 * @param: array $arrData - Product data under array  
 	 */  
 	public function post_one($arrData){  
+		$arrData = array( 'product' => $arrData);   
 		return $this->call('POST', '/admin/products.json', $arrData);  
 	}
 	
@@ -55,31 +65,53 @@ class ProductHRV extends HaravanClient {
 	 * @param: array $arrData - Product data under array  
 	 */  
 	public function update_one($strID, $arrData){  
+		$arrData = array( 'product' => $arrData);  
 		return $this->call('PUT', '/admin/products/' . $strID . '.json', $arrData);  
+	} 
+	
+	/*
+	 * check existing product by Haravan handle 
+	 * 
+	 * @author: phong.nguyen 20151021  
+	 * @param: string $strProHandle - Handle need to be checked   
+	 * @param: array $arrAllProducts - Product data under array  
+	 */  
+	public function check_existing_product($strProHandle, $arrAllProducts){   
+		$boFound = false; 
+		$strProID = null; 
+		foreach($arrAllProducts as $arrPro){
+			if ($strProHandle == $arrPro['handle']){
+				$boFound = true; 
+				$strProID = $arrPro['id']; 
+				break;  
+			}
+		}
+		
+		return $strProID; 
 	} 
 	
 	/* 
 	 * Add 1 collection for a product.   
 	 * 
 	 * @author: phong.nguyen 20151028  
-	 * @param: array $arrAllCC - all Custom Collection   
+	 * @param: string $strProID - Product ID  
+	 * @param: string $strCollectionTitle - Collection Title  
+	 * @param: array $arrAllCurrentCC - MODIFIED, all Custom Collection   
 	 * @param: array $objCCHaravan - object HaravanClient "Custom Collection"  
-	 * @param: array $objCollectHRV - object HaravanClient "Collect"  
-	 * @param: string $strUrlImagesFolder 
-	 * @rturn: string $strCCRelevantID - current Custom Collection id.  
+	 * @param: array $objCollectHRV - object HaravanClient "Collect"   
 	 */  
-	public function add_one_collection($strProID, $strCollectionTitle, $arrAllCC, $objCCHaravan, $objCollectHRV){  
+	public function add_one_collection($strProID, $strCollectionTitle, &$arrAllCurrentCC, $objCCHaravan, $objCollectHRV){  
 		// get id for Custom Collection "$strCollectionTitle"  
-		$strCCRelevantID = $objCCHaravan->check_collection($arrAllCC, $strCollectionTitle);  
+		$strCCRelevantID = $objCCHaravan->add_one_cc($arrAllCurrentCC, $strCollectionTitle);  
 		
 		// add current Custom Collection for a product  
-		$arrCollectPostData = array(
-			'collect' => array(
+		$arrCollectData = array(
+			// 'collect' => array( // no need! 
 				'product_id' => $strProID, 
 				'collection_id' => $strCCRelevantID, 
-			) 
+			// ) 
 		); 
-		$arrCollects = $objCollectHRV->post_one($arrCollectPostData);   
+		$arrCollects = $objCollectHRV->post_one($arrCollectData);  
 		
 		return $strCCRelevantID; 
 	} 
@@ -99,10 +131,28 @@ class ProductHRV extends HaravanClient {
 		// get all Custom Collection  
 		$objCCHaravan = new CustomCollectionHRV($this->shop_domain, $this->token, $this->api_key, $this->secret);   
 		$objCollectHRV = new CollectHRV($this->shop_domain, $this->token, $this->api_key, $this->secret); 
+		$objBlogHRV = new BlogHRV($this->shop_domain, $this->token, $this->api_key, $this->secret); 
+		
 		$arrAllCC = $objCCHaravan->get_all();  
 		$strProID = '1001024105';  
-		$strCollectionTitle = 'cat05'; 
-		 
+		// $strCollectionTitle = 'cat05'; 
+		
+		$strFakeBlogTitle = 'My Custom Blog'; 
+		// // remove all fake Custom Blog  
+		$arrAllBlogs = $objBlogHRV->get_all();  
+		$objBlogHRV->remove_all_titles($arrAllBlogs, $strFakeBlogTitle);   
+		
+		// //create Fake CustomCollection; not, maybe raise error  
+		// $arrData = array( 
+			// 'handle' => $strFakeBlogTitle,  // $strTitle, //  
+			// 'title' => $strFakeBlogTitle, 
+		// );  
+		// $arrBlogFake = $objBlogHRV->post_one($arrData);   
+		// $strBlogFake_ID = $arrBlogFake['id'];  
+		
+		//get all current products 
+		$arrAllProducts = $this->get_all();   
+		
 		foreach($arrProductImported as $proOK) { 
 			$int_count++; 
 			if($int_count <= $int_max_put){  
@@ -111,13 +161,34 @@ class ProductHRV extends HaravanClient {
 				//fix img: get images url on hostring when host-url(strUrlImagesFolder) NOT empty 
 				if(trim($strUrlImagesFolder) != ''){
 					$proOK['images'][0]['src'] = $strUrlImagesFolder . '/' . $proOK['variants'][0]['sku'] . '.png';  
+				} 
+				
+				//get Haravan handle, by updating Fake CustomCollection    
+				$arrData = array( 
+					'handle' => $proOK['handle'], // $strFakeBlogTitle 
+					'title' => $strFakeBlogTitle, //$proOK['handle'], // 
+					// 'body_html' => $proOK['handle'], // not at blog; only at  CustomCollection 
+				); 		
+				// $arrBlogFake = $objBlogHRV->update_one($strBlogFake_ID, $arrData);   
+				$arrBlogFake = $objBlogHRV->post_one($arrData);   
+				$strHaravanHandle = $arrBlogFake['handle']; 
+				$proOK['handle'] = $strHaravanHandle;  
+				
+				//check existing product by handle: existing - update, NOT - create a new one.  
+				$strProID = $this->check_existing_product($strHaravanHandle, $arrAllProducts); 
+				if( $strProID != null )  
+				{	
+					// var_dump('PUT'); 
+					// var_dump($proOK); 
+					$product = $this->update_one($strProID, $proOK);  
 				}
-				// var_dump($proOK['images'][0]['src']); 
-				$arrData = array(
-					'product' => $proOK  
-				);  
-				$product = $this->update_one($strProID, $arrData);    
-				// $product = $this->post_one($arrData); 
+				else{
+					// var_dump('POST');
+					// var_dump($proOK);
+					// var_dump($strHaravanHandle); 
+					$product = $this->post_one($proOK); 
+					$strProID = $product['id']; // update current ProductID 
+				} 
 				// $product = $this->get_one($strProID);   
 				
 				// add 1 collection  
@@ -126,10 +197,15 @@ class ProductHRV extends HaravanClient {
 				
 				
 			} // end if: int_max_put  
-		} // end for: arrProductImported 
+		} // end for: arrProductImported  
 		
+		//delete Fake CustomCollection   
+		// $objBlogHRV->delete_one($strBlogFake_ID);  
 		
-		
+		// remove all fake Custom Blog  
+		// $strFakeBlogTitle = 'My Custom Blog'; 
+		$arrAllBlogs = $objBlogHRV->get_all();  
+		$objBlogHRV->remove_all_titles($arrAllBlogs, $strFakeBlogTitle);   
 	} 
 		
 		
