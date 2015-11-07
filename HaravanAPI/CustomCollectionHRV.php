@@ -86,6 +86,7 @@ class CustomCollectionHRV extends HaravanClient {
 		} 
 	} 
 	
+	
 	/*
 	 * Add 1 Collection "$strCollectionTitle" inside array current Custom Collection.  
 	 * Return relevant id for $strCollectionTitle. 
@@ -130,6 +131,18 @@ class CustomCollectionHRV extends HaravanClient {
 			return $arrNewCC['id'];  
 		} 
 		
+	} 
+	
+	
+	/*
+	 * get all CustomCollection that product belong to 
+	 * ERROR, check this: ha-limits14-api errorAAA collects + product.png 
+	 * 
+	 * @author: phong.nguyen 20151103   
+	 * @param: string $strProID - Product ID 
+	 */  
+	public function get_all_custom_collection_by_product($strProID){  
+		return $this->call('GET', 'admin/custom_collections.json?product_id='. $strProID, array()); 
 	} 
 	 
 		

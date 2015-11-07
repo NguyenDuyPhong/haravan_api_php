@@ -69,6 +69,7 @@ class ProductHRV extends HaravanClient {
 		return $this->call('PUT', '/admin/products/' . $strID . '.json', $arrData);  
 	} 
 	
+	
 	/*
 	 * check existing product by Haravan handle 
 	 * 
@@ -111,7 +112,7 @@ class ProductHRV extends HaravanClient {
 				'collection_id' => $strCCRelevantID, 
 			// ) 
 		); 
-		$arrCollects = $objCollectHRV->post_one($arrCollectData);  
+		$arrCollects = $objCollectHRV->post_one($arrCollectData);   
 		
 		return $strCCRelevantID; 
 	} 
@@ -155,8 +156,7 @@ class ProductHRV extends HaravanClient {
 		
 		foreach($arrProductImported as $proOK) { 
 			$int_count++; 
-			if($int_count <= $int_max_put){  
-				
+			if($int_count <= $int_max_put){   
 				
 				//fix img: get images url on hostring when host-url(strUrlImagesFolder) NOT empty 
 				if(trim($strUrlImagesFolder) != ''){

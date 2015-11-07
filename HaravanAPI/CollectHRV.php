@@ -20,10 +20,10 @@ class CollectHRV extends HaravanClient {
 	}
 	
 	/*
-	 * get all CustomCollection 
+	 * get all Collect 
 	 * 
 	 * @author: phong.nguyen 20151028  
-	 * @param: string $strID - CustomCollection ID 
+	 * @param: string $strID - Collect ID 
 	 */  
 	public function get_all(){  
 		return $this->call('GET', '/admin/collects.json', array()); 
@@ -62,6 +62,16 @@ class CollectHRV extends HaravanClient {
 		return $this->call('PUT', '/admin/collects/' . $strID . '.json', $arrData);  
 	} 
 	 
+	/*
+	 * get all Collect that product belong to 
+	 * ERROR, check this: ha-limits14-api errorAAA collects + product.png 
+	 * 
+	 * @author: phong.nguyen 20151103   
+	 * @param: string $strID - Collect ID 
+	 */  
+	public function get_all_collects_by_product($strProID){  
+		return $this->call('GET', 'admin/collects.json?product_id='. $strProID, array()); 
+	} 
 		
 } 
 
