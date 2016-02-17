@@ -16,7 +16,7 @@ class CollectHRV extends HaravanClient {
 	 * @param: string $strID - Collect ID 
 	 */  
 	public function get_one($strID){  
-		return $this->call('GET', '/admin/collects/' . $strID . '.json', array()); 
+		return $this->call('GET', '/admin/collects/'. $strID . '.json', array()); 
 	}
 	
 	/*
@@ -25,8 +25,8 @@ class CollectHRV extends HaravanClient {
 	 * @author: phong.nguyen 20151028  
 	 * @param: string $strID - Collect ID 
 	 */  
-	public function get_all(){  
-		return $this->call('GET', '/admin/collects.json', array()); 
+	public function get_all($arrFilter = array()){  
+		return $this->call('GET', '/admin/collects.json', array($arrFilter)); 
 	}
 	
 	/*
@@ -47,7 +47,7 @@ class CollectHRV extends HaravanClient {
 	 * @param: string $strID - ID need to be deleted 
 	 */  
 	public function delete_one($strID){  
-		return $this->call('DELETE', '/admin/collects/' . $strID . '.json', array() );  
+		return $this->call('DELETE', '/admin/collects/'. $strID . '.json', array() );  
 	}
 	
 	/*
@@ -59,7 +59,7 @@ class CollectHRV extends HaravanClient {
 	 */  
 	public function update_one($strID, $arrData){  
 		$arrData = array( 'collect' => $arrData);  
-		return $this->call('PUT', '/admin/collects/' . $strID . '.json', $arrData);  
+		return $this->call('PUT', '/admin/collects/'. $strID . '.json', $arrData);  
 	} 
 	 
 	/*

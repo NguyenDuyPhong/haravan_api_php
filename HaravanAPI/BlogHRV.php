@@ -22,8 +22,8 @@ class BlogHRV extends HaravanClient {
 	 * 
 	 * @author: phong.nguyen 20151031   
 	 */  
-	public function get_all(){  
-		return $this->call('GET', '/admin/blogs.json', array()); 
+	public function get_all($arrFilter = array()){  
+		return $this->call('GET', '/admin/blogs.json', $arrFilter); 
 	}
 	 
 	/*
@@ -33,7 +33,7 @@ class BlogHRV extends HaravanClient {
 	 * @param: string $strID - blog ID 
 	 */  
 	public function get_one($strID){  
-		return $this->call('GET', '/admin/blogs/' . $strID . '.json', array()); 
+		return $this->call('GET', '/admin/blogs/'. $strID . '.json', array()); 
 	}
 	
 	/*
@@ -54,7 +54,7 @@ class BlogHRV extends HaravanClient {
 	 * @param: string $strID - ID need to be deleted 
 	 */  
 	public function delete_one($strID){  
-		return $this->call('DELETE', '/admin/blogs/' . $strID . '.json', array() );  
+		return $this->call('DELETE', '/admin/blogs/'. $strID . '.json', array() );  
 	}
 	
 	/*
@@ -66,7 +66,7 @@ class BlogHRV extends HaravanClient {
 	 */  
 	public function update_one($strID, $arrData){  
 		$arrData = array( 'blog' => $arrData);  
-		return $this->call('PUT', '/admin/blogs/' . $strID . '.json', $arrData);  
+		return $this->call('PUT', '/admin/blogs/'. $strID . '.json', $arrData);  
 	} 
 	
 	/*

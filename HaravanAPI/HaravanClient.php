@@ -77,7 +77,8 @@ class HaravanClient {
 
 		if (isset($response['errors']) or ($this->last_response_headers['http_status_code'] >= 400))
 		{
-			// var_dump($response); 
+			var_dump($response); 
+			// var_dump($url); 
 			throw new HaravanApiException($method, $path, $params, $this->last_response_headers, $response);
 		}
 
@@ -167,6 +168,87 @@ class HaravanClient {
 		$params = explode('/', $this->last_response_headers['http_x_haravan_shop_api_call_limit']);
 		return (int) $params[$index];
 	}	
+	
+	
+	/* 
+	 * get_params_from_array
+ 	 * ( no need, by: $query = in_array($method, array('GET','DELETE')) ? $params : array();..)
+ 	 *  
+	 * @author: phong.nguyen 20151105  
+	 * @param array $arrAndValues  
+	 * array(
+	 * 		'id' => '4'
+	 * 		... 
+	 *  )
+	 * @return string $strParams "id = 4 AND ... "
+	*/ 
+	public function get_params_from_array($arrAndValues){ 
+		$strParams = ''; 
+		$count = 0; 
+		foreach($arrAndValues as $key => $value){
+			$count++; 
+			if($count > 1){
+				$strParams .= '&' . $key . '="' . $value . '"';  
+			}
+			else {
+				$strParams .= $key . '="' . $value . '"'; 
+			}
+			
+		}
+		
+		return $strParams; 
+	}
+	
+	/*
+	 * get current shop info. 
+	 * 
+	 * @author: phong.nguyen 20151110    
+	 */  
+	public function get_shop(){   
+		return $this->call('GET', '/admin/shop.json', array() ); 
+	}
+	
+	/*
+	 * validateWebhook 
+	 * verify hook from a server 
+	 * 
+	 * @author: phong.nguyen 20151127  
+	 */  
+	public function validateWebhook($data, $hmac_sha256, $api_secrect) 
+	{ 
+  		$calculated_hmac = base64_encode(hash_hmac('sha256', $data, $api_secrect, true));
+  		return ($hmac_sha256 == $calculated_hmac);
+	}
+	
+	/* 
+	 * get_all_loop_page... 
+	 * 
+	 * @author: phong.nguyen 20151109  
+	 */  
+	public function get_all_loop_page(){    
+		$arrAllProducts = array();     
+		$arrFilter = array(
+			'page' => 1, 
+		); 
+		$boContinue = true; 
+		while($boContinue == true)
+		{   
+			$arrTemp = $this->get_all($arrFilter);   
+			$arrFilter['page']++; 
+			if(count($arrTemp) > 0){ 
+				foreach($arrTemp as $item){
+					$arrAllProducts[] = $item; 
+				} 
+			}
+			else{
+				$boContinue = false; 
+			}
+		} 
+		
+		return $arrAllProducts; 
+	
+	}
+	
 }
 
 class HaravanCurlException extends Exception { }

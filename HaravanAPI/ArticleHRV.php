@@ -58,7 +58,7 @@ class ArticleHRV extends HaravanClient {
 	 * @param: string $strID - ID need to be deleted 
 	 */  
 	public function delete_one($strBlogID, $strID){  
-		return $this->call('DELETE', '/admin/blogs/'. $strBlogID .'/articles/' . $strID . '.json', array() );  
+		return $this->call('DELETE', '/admin/blogs/'. $strBlogID .'/articles/'. $strID . '.json', array() );  
 	}
 	
 	/*
@@ -71,7 +71,7 @@ class ArticleHRV extends HaravanClient {
 	 */  
 	public function update_one($strBlogID, $strID, $arrData){  
 		$arrData = array( 'article' => $arrData);  
-		return $this->call('PUT', '/admin/blogs/'. $strBlogID .'/articles/' . $strID . '.json', $arrData);  
+		return $this->call('PUT', '/admin/blogs/'. $strBlogID .'/articles/'. $strID . '.json', $arrData);  
 	} 
 	
 		

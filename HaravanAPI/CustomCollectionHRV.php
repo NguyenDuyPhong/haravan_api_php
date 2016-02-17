@@ -16,7 +16,7 @@ class CustomCollectionHRV extends HaravanClient {
 	 * @param: string $strID - CustomCollection ID 
 	 */  
 	public function get_one($strID){  
-		return $this->call('GET', '/admin/custom_collections/' . $strID . '.json', array()); 
+		return $this->call('GET', '/admin/custom_collections/'. $strID . '.json', array()); 
 	}
 	
 	/*
@@ -25,8 +25,8 @@ class CustomCollectionHRV extends HaravanClient {
 	 * @author: phong.nguyen 20151028  
 	 * @param: string $strID - CustomCollection ID 
 	 */  
-	public function get_all(){  
-		return $this->call('GET', '/admin/custom_collections.json', array()); 
+	public function get_all($arrFilter = array()){  
+		return $this->call('GET', '/admin/custom_collections.json', array($arrFilter)); 
 	}
 	
 	/*
@@ -47,7 +47,7 @@ class CustomCollectionHRV extends HaravanClient {
 	 * @param: string $strID - ID need to be deleted 
 	 */  
 	public function delete_one($strID){  
-		return $this->call('DELETE', '/admin/custom_collections/' . $strID . '.json', array() );  
+		return $this->call('DELETE', '/admin/custom_collections/'. $strID . '.json', array() );  
 	}
 	
 	/*
@@ -59,7 +59,7 @@ class CustomCollectionHRV extends HaravanClient {
 	 */  
 	public function update_one($strID, $arrData){  
 		$arrData = array( 'custom_collection' => $arrData);   
-		return $this->call('PUT', '/admin/custom_collections/' . $strID . '.json', $arrData);  
+		return $this->call('PUT', '/admin/custom_collections/'. $strID . '.json', $arrData);  
 	} 
 	 
 	/*
@@ -135,14 +135,37 @@ class CustomCollectionHRV extends HaravanClient {
 	
 	
 	/*
-	 * get all CustomCollection that product belong to 
-	 * ERROR, check this: ha-limits14-api errorAAA collects + product.png 
+	 * get all CustomCollection that product belong to  
 	 * 
 	 * @author: phong.nguyen 20151103   
 	 * @param: string $strProID - Product ID 
 	 */  
 	public function get_all_custom_collection_by_product($strProID){  
 		return $this->call('GET', 'admin/custom_collections.json?product_id='. $strProID, array()); 
+	} 
+
+	/*
+	 * get all namekey
+	 * 
+	 * @author: phong.nguyen 20151113     
+	 * @return: array(
+	 *  	'Collection 1' => true,  
+	 *  	...,  
+	 * )
+	 */  
+	public function get_all_titlekeys(){   
+		$arrFilter = array(
+			'fields' => 'title', 
+		);
+		$arrVendors = array(); 
+		$arrAllItems =  $this->get_all($arrFilter);  
+		
+		//loop for getting all vendors 
+		foreach($arrAllItems as $arrTMP){
+			$arrVendors[trim($arrTMP['title'])] = true; 
+		}
+		
+		return $arrVendors; 
 	} 
 	 
 		
